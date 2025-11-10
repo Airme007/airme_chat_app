@@ -37,44 +37,6 @@ export default function ChatRoom({ username, onLogout }) {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Mobile Contacts Button */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
-        <button
-          onClick={() => setShowMobileContacts(!showMobileContacts)}
-          className="bg-blue-600 text-white p-2 rounded-lg shadow-lg hover:bg-blue-700 transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-        </button>
-
-        {/* Mobile Contacts Dropdown */}
-        {showMobileContacts && (
-          <div className="absolute top-12 left-0 bg-white border border-gray-200 rounded-lg shadow-lg p-4 w-64 max-h-80 overflow-y-auto">
-            <h3 className="text-lg font-semibold mb-3">Contacts</h3>
-            {users.filter(u => u !== username).length > 0 ? (
-              users.filter(u => u !== username).map((user) => (
-                <div
-                  key={user}
-                  onClick={() => {
-                    setSelectedUser({ username: user, online: true });
-                    setShowMobileContacts(false);
-                  }}
-                  className="flex items-center gap-2 p-2 rounded-lg cursor-pointer hover:bg-gray-100 transition"
-                >
-                  <span className="w-3 h-3 rounded-full bg-green-500" />
-                  <span className="text-sm font-medium">{user}</span>
-                </div>
-              ))
-            ) : (
-              <div className="text-center text-gray-500 text-sm py-4">
-                No friends online
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
       {/* Sidebar */}
       <FriendsSidebar
         users={users.map((u) => ({
@@ -88,14 +50,53 @@ export default function ChatRoom({ username, onLogout }) {
       {/* Chat Section */}
       <div className="flex flex-col flex-1">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-white shadow">
-          <div>
-            <h2 className="text-lg font-semibold">Airme Chat</h2>
-            <p className="text-sm text-gray-500">
-              {selectedUser
-                ? `Chatting with ${selectedUser.username}`
-                : `Hello ${username}`}
-            </p>
+        <div className="fixed top-0 left-0 md:left-64 right-0 z-40 flex items-center justify-between p-4 bg-white shadow">
+          <div className="flex items-center gap-2">
+            {/* Mobile Contacts Button */}
+            <div className="md:hidden relative">
+              <button
+                onClick={() => setShowMobileContacts(!showMobileContacts)}
+                className="bg-blue-600 text-white p-2 rounded-lg shadow-lg hover:bg-blue-700 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </button>
+
+              {/* Mobile Contacts Dropdown */}
+              {showMobileContacts && (
+                <div className="absolute top-12 left-0 bg-white border border-gray-200 rounded-lg shadow-lg p-4 w-64 max-h-80 overflow-y-auto z-50">
+                  <h3 className="text-lg font-semibold mb-3">Contacts</h3>
+                  {users.filter(u => u !== username).length > 0 ? (
+                    users.filter(u => u !== username).map((user) => (
+                      <div
+                        key={user}
+                        onClick={() => {
+                          setSelectedUser({ username: user, online: true });
+                          setShowMobileContacts(false);
+                        }}
+                        className="flex items-center gap-2 p-2 rounded-lg cursor-pointer hover:bg-gray-100 transition"
+                      >
+                        <span className="w-3 h-3 rounded-full bg-green-500" />
+                        <span className="text-sm font-medium">{user}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center text-gray-500 text-sm py-4">
+                      No friends online
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold">Airme Chat</h2>
+              <p className="text-sm text-gray-500">
+                {selectedUser
+                  ? `Chatting with ${selectedUser.username}`
+                  : `Hello ${username}`}
+              </p>
+            </div>
           </div>
           <div className="flex items-center space-x-3">
             <div className="text-sm text-gray-600">Online: {users.length}</div>
@@ -121,7 +122,7 @@ export default function ChatRoom({ username, onLogout }) {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-auto p-4 bg-gray-50">
+        <div className="flex-1 overflow-auto p-4 bg-gray-50 pt-20">
           <div className="max-w-2xl mx-auto">
             {messages.map((m) => (
               <div
