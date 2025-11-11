@@ -68,9 +68,9 @@ export default function ChatRoom({ username, onLogout }) {
                 <div className="absolute top-12 left-0 bg-white border border-gray-200 rounded-lg shadow-lg p-4 w-64 max-h-80 overflow-y-auto z-50">
                   <h3 className="text-lg font-semibold mb-3">Contacts</h3>
                   {users.filter(u => u !== username).length > 0 ? (
-                    users.filter(u => u !== username).map((user, index) => (
+                    users.filter(u => u !== username).map((user) => (
                       <div
-                        key={`${user}-${index}`}
+                        key={user}
                         onClick={() => {
                           setSelectedUser({ username: user, online: true });
                           setShowMobileContacts(false);
