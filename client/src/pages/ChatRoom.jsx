@@ -30,9 +30,11 @@ export default function ChatRoom({ username, onLogout }) {
   };
 
   const logout = () => {
-    localStorage.removeItem('username');
-    localStorage.removeItem('token');
-    onLogout();
+    if (window.confirm('Are you sure you want to log out?')) {
+      localStorage.removeItem('username');
+      localStorage.removeItem('token');
+      onLogout();
+    }
   };
 
   return (

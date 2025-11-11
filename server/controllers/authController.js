@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import User from "../models/User.js";
 
 export const registerUser = async (req, res) => {
@@ -8,6 +9,10 @@ export const registerUser = async (req, res) => {
 
     if (!username || !password)
       return res.status(400).json({ message: "Username and password required" });
+
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ message: "Database not available" });
+    }
 
     const existingUser = await User.findOne({ username });
     if (existingUser)
@@ -39,6 +44,10 @@ export const loginUser = async (req, res) => {
 
     if (!username || !password)
       return res.status(400).json({ message: "Username and password required" });
+
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ message: "Database not available" });
+    }
 
     const user = await User.findOne({ username });
     if (!user) return res.status(404).json({ message: "User not found" });

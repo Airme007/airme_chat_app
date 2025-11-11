@@ -22,7 +22,16 @@ export const useSocket = () => {
 
   const disconnect = () => socket.disconnect();
 
-  const sendMessage = (message) => socket.emit('send_message', { message });
+  const sendMessage = (message) => {
+    const msg = {
+      id: Date.now() + Math.random(), // temporary unique id
+      username: localStorage.getItem('username'), // assuming username is stored
+      message,
+      timestamp: new Date().toISOString(),
+    };
+    setMessages(prev => [...prev, msg]);
+    socket.emit('send_message', { message });
+  };
 
   const sendPrivateMessage = (toSocketId, message) => socket.emit('private_message', { toSocketId, message });
 
@@ -40,7 +49,10 @@ export const useSocket = () => {
     };
 
     const onReceiveMessage = (message) => {
-      setMessages(prev => [...prev, message]);
+      const currentUsername = localStorage.getItem('username');
+      if (message.username !== currentUsername) {
+        setMessages(prev => [...prev, message]);
+      }
     };
 
     const onPrivateMessage = (message) => {
