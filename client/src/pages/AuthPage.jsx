@@ -8,19 +8,45 @@ export default function AuthPage({ onAuthSuccess }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!username.trim()) {
-      setError('Username is required');
+    setLoading(true);
+    if (!username.trim() || !password.trim()) {
+      setError('Username and password are required');
+      setLoading(false);
       return;
     }
-    // Mock authentication - directly proceed to chatroom
-    localStorage.setItem('username', username);
-    onAuthSuccess(username);
+
+    try {
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+      const response = await fetch(`${API}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: username.trim(), password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('Auth success, token:', data.token, 'username:', data.username);
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('username', data.username);
+        onAuthSuccess(data.username);
+      } else {
+        setError(data.message || 'Authentication failed');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -32,7 +58,9 @@ export default function AuthPage({ onAuthSuccess }) {
           <input required value={username} onChange={e => setUsername(e.target.value)} className="border p-2 rounded-lg" placeholder="Username" />
           <input required value={password} onChange={e => setPassword(e.target.value)} type="password" className="border p-2 rounded-lg" placeholder="Password" />
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-          <button className="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">{isLogin ? 'Login' : 'Register'}</button>
+          <button disabled={loading} className="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50">
+            {loading ? 'Processing...' : (isLogin ? 'Login' : 'Register')}
+          </button>
         </form>
         <p className="text-center text-sm mt-4">
           {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}

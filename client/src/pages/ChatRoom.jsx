@@ -6,16 +6,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import FriendsSidebar from '@/components/FriendSideBar';
 
 export default function ChatRoom({ username, onLogout }) {
-  const { connect, disconnect, messages, users, typingUsers, sendMessage, setTyping } = useSocket();
+  const { connect, disconnect, messages, users, typingUsers, sendMessage, setTyping, isConnected } = useSocket();
   const [text, setText] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
   const [showMobileContacts, setShowMobileContacts] = useState(false);
   const scroller = useRef();
 
   useEffect(() => {
-    connect(username);
+    connect();
     return () => disconnect();
-  }, [username]);
+  }, []);
 
   useEffect(() => {
     scroller.current?.scrollIntoView({ behavior: 'smooth' });
@@ -56,7 +56,7 @@ export default function ChatRoom({ username, onLogout }) {
             <div className="md:hidden relative">
               <button
                 onClick={() => setShowMobileContacts(!showMobileContacts)}
-                className="bg-blue-600 text-white p-2 rounded-lg shadow-lg hover:bg-blue-700 transition-colors"
+                className="bg-blue-500 text-white p-2 rounded-lg shadow hover:bg-blue-600 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -102,7 +102,7 @@ export default function ChatRoom({ username, onLogout }) {
             <div className="text-sm text-gray-600">Online: {users.length}</div>
             <button
               onClick={logout}
-              className="bg-red-500 text-white p-2 rounded hover:bg-red-600 transition-colors"
+              className="bg-red-400 text-white p-2 rounded hover:bg-red-500 transition-colors"
             >
               <svg
                 className="w-4 h-4"
@@ -123,6 +123,11 @@ export default function ChatRoom({ username, onLogout }) {
 
         {/* Messages */}
         <div className="flex-1 overflow-auto p-4 bg-gray-50 pt-20">
+          {!isConnected && (
+            <div className="text-center text-gray-500 mb-4">
+              Connecting to server...
+            </div>
+          )}
           <div className="max-w-2xl mx-auto">
             {messages.map((m) => (
               <div
@@ -179,7 +184,7 @@ export default function ChatRoom({ username, onLogout }) {
                   : 'Type a message...'
               }
             />
-            <button className="bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 transition-colors">
+            <button className="bg-blue-500 text-white p-3 rounded-xl hover:bg-blue-600 transition-colors">
               <svg
                 className="w-5 h-5 transform rotate-90"
                 fill="none"

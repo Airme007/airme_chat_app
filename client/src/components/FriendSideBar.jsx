@@ -8,7 +8,7 @@ export default function FriendsSidebar({ users, username, onSelectUser }) {
   const filteredUsers = useMemo(() => {
     return users
       .filter((u) => u.username !== username)
-      .filter((u) => u.username.toLowerCase().includes(search.toLowerCase()));
+      .filter((u) => u.username && u.username.toLowerCase().includes(search.toLowerCase()));
   }, [users, username, search]);
 
   return (
